@@ -26,6 +26,8 @@ class Args:
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
+    mps: bool = True
+    """if toggled, mps will be enabled by default (when cuda is unavailable)"""
     track: bool = False
     """if toggled, this experiment will be tracked with Weights and Biases"""
     wandb_project_name: str = "cleanRL"
@@ -179,7 +181,9 @@ if __name__ == "__main__":
     torch.manual_seed(args.seed)
     torch.backends.cudnn.deterministic = args.torch_deterministic
 
-    device = torch.device("cuda" if torch.cuda.is_available() and args.cuda else "cpu")
+    mps_backend = getattr(torch.backends, "mps", None)
+    mps_available = bool(mps_backend) and mps_backend.is_available() and getattr(mps_backend, "is_built", lambda: True)()
+    device = torch.device("cuda" if torch.cuda.is_available() and args.cuda else "mps" if args.mps and mps_available else "cpu")
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
