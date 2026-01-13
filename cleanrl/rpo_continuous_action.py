@@ -225,9 +225,11 @@ if __name__ == "__main__":
             # TRY NOT TO MODIFY: execute the game and log data.
             next_obs, reward, terminations, truncations, infos = envs.step(action.cpu().numpy())
             done = np.logical_or(terminations, truncations)
-            rewards[step] = torch.as_tensor(reward, dtype=torch.float32, device=device).view(-1)
-            next_obs = torch.as_tensor(next_obs, dtype=torch.float32, device=device)
-            next_done = torch.as_tensor(done, dtype=torch.float32, device=device)
+            reward_t = torch.as_tensor(reward).view(-1)
+            if device.type == "mps" and reward_t.dtype == torch.float64:
+                reward_t = reward_t.float()
+            rewards[step] = reward_t.to(device)
+            next_obs, next_done = torch.Tensor(next_obs).to(device), torch.Tensor(done).to(device)
 
             if "final_info" in infos:
                 for info in infos["final_info"]:
