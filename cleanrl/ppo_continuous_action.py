@@ -178,6 +178,19 @@ if __name__ == "__main__":
     mps_backend = getattr(torch.backends, "mps", None)
     mps_available = bool(mps_backend) and mps_backend.is_available() and getattr(mps_backend, "is_built", lambda: True)()
     device = torch.device("cuda" if torch.cuda.is_available() and args.cuda else "mps" if args.mps and mps_available else "cpu")
+    print(
+        "[cleanrl]"
+        f" algo=ppo env_id={args.env_id}"
+        f" device={device}"
+        f" cuda_available={torch.cuda.is_available()}"
+        f" mps_available={mps_available}"
+        f" total_timesteps={args.total_timesteps}"
+        f" num_envs={args.num_envs}"
+        f" num_steps={args.num_steps}"
+        f" num_minibatches={args.num_minibatches}"
+        f" update_epochs={args.update_epochs}",
+        flush=True,
+    )
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
