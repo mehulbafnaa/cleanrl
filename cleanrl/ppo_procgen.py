@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     # env setup
     envs = ProcgenEnv(num_envs=args.num_envs, env_name=args.env_id, num_levels=0, start_level=0, distribution_mode="easy")
-    envs = gym.wrappers.TransformObservation(envs, lambda obs: obs["rgb"])
+    envs = gym.wrappers.TransformObservation(envs, lambda obs: obs["rgb"], None)
     envs.single_action_space = envs.action_space
     envs.single_observation_space = envs.observation_space["rgb"]
     envs.is_vector_env = True
