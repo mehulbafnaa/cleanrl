@@ -237,7 +237,10 @@ if __name__ == "__main__":
         real_next_obs = next_obs.copy()
         for idx, trunc in enumerate(truncations):
             if trunc:
-                real_next_obs[idx] = infos["final_observation"][idx]
+                # Gymnasium >= 1.0.0 doesn't provide final_observation
+                # Use next_obs directly when it's missing (it's already correct)
+                if "final_observation" in infos:
+                    real_next_obs[idx] = infos["final_observation"][idx]
         rb.add(obs, real_next_obs, actions, rewards, terminations, infos)
 
         # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
